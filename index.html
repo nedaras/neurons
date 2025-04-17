@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <script type="module">
+    const res = await fetch('zig-out/bin/ai_nn.wasm');
+    const buf = await res.arrayBuffer();
+    const { instance } = await WebAssembly.instantiate(buf);
+    const { add } = instance.exports;
+
+    const sum = add(5, 7);
+    console.log('5 + 7 =', sum);
+  </script></body>
+</html>

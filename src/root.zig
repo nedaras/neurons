@@ -14,7 +14,7 @@ pub export fn init() void {
     const slice = allocator.alloc(f32, Mat.len()) catch unreachable;
 
     for (0..Mat.len()) |i| {
-        slice[i] = @floatFromInt(i % 16);
+        slice[i] = std.crypto.random.float(f32);
     }
 
     mat = Mat.fromSlice(slice);

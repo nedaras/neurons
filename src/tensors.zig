@@ -2,6 +2,12 @@ const std = @import("std");
 const mem = std.mem;
 const assert = std.debug.assert;
 
+pub fn Vector(comptime T: type, N: comptime_int) type {
+    return Tensor(T, N, 1);
+}
+
+pub const Matrix = Tensor;
+
 pub fn Tensor(comptime T: type, Rows: comptime_int, Cols: comptime_int) type {
     return struct {
         ptr: [*]const T,

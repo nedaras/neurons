@@ -13,13 +13,6 @@ const layers = [_]type{
 };
 
 pub export fn init() void {
-    //const network_len = Weights1.len() + Weights2.len() + Weights3.len() + Biases1.len() + Biases2.len() + Biases3.len() + Output.len();
-    //const slice = allocator.alloc(f32, network_len) catch unreachable;
-
-    //for(slice) |*i| {
-        //i.* = 1.0;
-    //}
-
     comptime var network_len = 0;
     inline for (layers) |layer| {
         network_len += layer.len() + layer.Rows;
@@ -58,7 +51,7 @@ pub export fn guess(ptr: [*]const f32, len: usize) void {
 
         // sigmoid
         for (0..Vec1.len()) |i| {
-            input[i] = 1 / (1 + std.math.pow(f32, std.math.e, -input[i]));
+            input[i] = 1.0 / (1.0 + @exp(-input[i]));
         }
     }
 

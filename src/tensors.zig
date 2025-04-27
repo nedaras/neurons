@@ -8,18 +8,20 @@ pub fn Vector(comptime T: type, N: comptime_int) type {
 
 pub const Matrix = Tensor;
 
-pub fn Tensor(comptime T: type, Rows: comptime_int, Cols: comptime_int) type {
+pub fn Tensor(comptime T: type, R: comptime_int, C: comptime_int) type {
     return struct {
         ptr: [*]const T,
 
         comptime rows: comptime_int = Rows,
         comptime cols: comptime_int = Cols,
 
+        pub const Rows = R;
+        pub const Cols = C;
+
         const Self = @This();
 
-        pub fn fromSlice(data: []const T) Self {
-            assert(data.len == Rows * Cols);
-            return .{ .ptr = data.ptr };
+        pub fn fromSlice(data: *const [Rows * Cols]T) Self {
+            return .{ .ptr = data };
         }
 
         pub fn len() comptime_int {

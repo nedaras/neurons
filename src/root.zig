@@ -2,7 +2,7 @@ const std = @import("std");
 const tensors = @import("tensors.zig");
 const assert = std.debug.assert;
 
-const allocator = std.testing.allocator;
+const allocator = std.heap.wasm_allocator;
 
 var network: []f32 = undefined;
 
@@ -19,8 +19,12 @@ pub export fn init() void {
     }
 
     network = allocator.alloc(f32, network_len) catch unreachable;
+
+    var pcg = std.Random.Pcg.init(0);
+    const rand = pcg.random();
+
     for (network) |*i| {
-        i.* = std.crypto.random.float(f32) * 2.0 - 1.0;
+        i.* = rand.float(f32) * 2.0 - 1.0;
     }
 }
 
@@ -28,13 +32,14 @@ pub export fn deinit() void {
     allocator.free(network);
 }
 
-pub export fn guess(ptr: [*]const f32, len: usize) void {
-    assert(len == 28 * 28);
+pub export fn guess(src: [*]const f32, src_len: usize, dst: [*]f32, dst_len: usize) void {
+    assert(src_len == 28 * 28);
+    assert(dst_len == 10);
 
     var input: [28 * 28]f32 = undefined;
     var out: [16]f32 = undefined;
 
-    @memcpy(&input, ptr[0..len]);
+    @memcpy(&input, src[0..src_len]);
 
     comptime var idx = 0;
     inline for (layers) |layer| {
@@ -55,19 +60,9 @@ pub export fn guess(ptr: [*]const f32, len: usize) void {
         }
     }
 
-    std.debug.print("{d}\n", .{input[0..10]});
+    @memcpy(dst[0..10], input[0..10]);
 }
 
 test {
     _ = tensors;
-
-    init();
-    defer deinit();
-
-    const input = allocator.alloc(f32, 28 * 28) catch unreachable;
-    defer allocator.free(input);
-
-    @memset(input, 1.0);
-
-    guess(input.ptr, input.len);
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"learning/ai/src/views"
 	"log"
 	"net/http"
 )
@@ -23,7 +24,9 @@ func main() {
 	router.Handle("/", fs)
 
 	router.HandleFunc("/{$}", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World!"))
+		if err := views.Index().Render(r.Context(), w); err != nil {
+			log.Fatal(err)
+		}
 	})
 
 	log.Fatal(http.ListenAndServe(":8080", router))

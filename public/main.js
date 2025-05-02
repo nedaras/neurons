@@ -16,7 +16,7 @@ function assert(condition, message) {
 let wasm_mod = null
 async function load_wasm() {
   if (!wasm_mod) {
-    const response = await fetch('zig-out/bin/ai_nn.wasm')
+    const response = await fetch('ai.wasm')
     const bytes = await response.arrayBuffer()
     const { instance } = await WebAssembly.instantiate(bytes)
 

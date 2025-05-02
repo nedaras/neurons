@@ -1,7 +1,7 @@
 package main
 
 import (
-	"learning/ai/src/views"
+	"learning/ai/pkg/handlers"
 	"log"
 	"net/http"
 )
@@ -13,7 +13,6 @@ func main() {
 	router := http.NewServeMux()
 	fs := http.FileServer(http.Dir("public"))
 
-
 	//contentFS, err := fs.Sub(publicFiles, "public")
 	//if err != nil {
 		//log.Fatal(err)
@@ -22,12 +21,15 @@ func main() {
 	//router.Handle("/", http.FileServer(http.FS(contentFS)))
 
 	router.Handle("/", fs)
-
-	router.HandleFunc("/{$}", func(w http.ResponseWriter, r *http.Request) {
-		if err := views.Index().Render(r.Context(), w); err != nil {
-			log.Fatal(err)
-		}
-	})
+	router.HandleFunc("/{$}", unwrap(handlers.HandleIndex))
 
 	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func unwrap(handler func(w http.ResponseWriter, r *http.Request) error) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := handler(w, r); err != nil {
+			log.Fatal(err)
+		}
+	}
 }

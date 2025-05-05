@@ -21,7 +21,7 @@ async function load_wasm() {
     const { instance } = await WebAssembly.instantiate(bytes)
 
     wasm_mod = instance.exports
-    wasm_mod.init()
+    wasm_mod.initbetween()
   }
 
   return wasm_mod
